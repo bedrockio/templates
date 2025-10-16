@@ -109,6 +109,14 @@ export const DEFAULT_HELPERS = {
       target: '_blank',
     });
   },
+
+  list(arr) {
+    return arr
+      .map((el) => {
+        return `- ${el}`;
+      })
+      .join('\n');
+  },
 };
 
 export function resolveHelpers(helpers, options) {

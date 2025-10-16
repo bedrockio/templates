@@ -106,6 +106,12 @@ I am the user! My job is to:
       });
       expect(body).toBe('Why hello Carl!');
     });
+
+    it('should not error if no template passed', async () => {
+      const renderer = new TemplateRenderer();
+      const { body } = renderer.run();
+      expect(body).toBe('');
+    });
   });
 
   describe('helpers', () => {
@@ -382,6 +388,18 @@ I am the user! My job is to:
         [Hello](http://example.com?foo=bar)
         `.trim()
       );
+    });
+
+    it('should render list helper', async () => {
+      const renderer = new TemplateRenderer();
+      const { body } = renderer.run({
+        template: '{{list arr}}',
+        params: {
+          arr: ['one', 'two', 'three'],
+        },
+      });
+
+      expect(body).toBe('- one\n- two\n- three');
     });
 
     it('should be able to create custom helpers', async () => {

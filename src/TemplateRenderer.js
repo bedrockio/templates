@@ -19,7 +19,15 @@ export default class TemplateRenderer {
   run(options) {
     const { template, params, helpers, ...rest } = this.resolveOptions(options);
 
+    if (!template) {
+      return {
+        body: '',
+        sections: [],
+      };
+    }
+
     const compiled = this.loadTemplate(template, rest);
+
     return compiled(params, {
       helpers: resolveHelpers(helpers, rest),
       allowProtoPropertiesByDefault: true,
