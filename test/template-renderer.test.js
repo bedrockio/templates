@@ -6,11 +6,11 @@ import { mockTime, unmockTime } from './utils/time.js';
 describe('TemplateRenderer', () => {
   describe('files', () => {
     it('should render basic template', async () => {
-      const interpolator = new TemplateRenderer({
+      const renderer = new TemplateRenderer({
         dir: 'test/templates',
       });
 
-      const { body, sections } = interpolator.run({
+      const { body, sections } = renderer.run({
         template: 'basic',
         params: {
           name: 'Frank',
@@ -25,11 +25,11 @@ describe('TemplateRenderer', () => {
     });
 
     it('should extract metadata from template', async () => {
-      const interpolator = new TemplateRenderer({
+      const renderer = new TemplateRenderer({
         dir: 'test/templates',
       });
 
-      const { meta } = interpolator.run({
+      const { meta } = renderer.run({
         template: 'meta',
         params: {
           name: 'Frank',
@@ -43,11 +43,11 @@ describe('TemplateRenderer', () => {
     });
 
     it('should extract sections from the template', async () => {
-      const interpolator = new TemplateRenderer({
+      const renderer = new TemplateRenderer({
         dir: 'test/templates',
       });
 
-      const { sections } = interpolator.run({
+      const { sections } = renderer.run({
         template: 'sections',
         params: {
           name: 'Frank',
@@ -57,11 +57,22 @@ describe('TemplateRenderer', () => {
       expect(sections).toEqual([
         {
           title: 'SYSTEM',
-          content: 'I am the system!',
+          content: `
+You are a helpful assistant. Your job is to:
+
+- Be a helpful assistant.
+- Be awesome.
+
+`.trim(),
         },
         {
           title: 'USER',
-          content: 'I am the user!',
+          content: `
+I am the user! My job is to:
+
+- Not be the assistant.
+
+`.trim(),
         },
       ]);
     });
@@ -69,13 +80,13 @@ describe('TemplateRenderer', () => {
 
   describe('setup', () => {
     it('should be able to pass static params in options', async () => {
-      const interpolator = new TemplateRenderer({
+      const renderer = new TemplateRenderer({
         params: {
           firstName: 'Frank',
         },
       });
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: 'Hello {{firstName}} {{lastName}}!',
         params: {
           lastName: 'Reynolds',
@@ -85,9 +96,9 @@ describe('TemplateRenderer', () => {
     });
 
     it('should be able to use a raw template in options', async () => {
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: 'Why hello {{name}}!',
         params: {
           name: 'Carl',
@@ -100,9 +111,9 @@ describe('TemplateRenderer', () => {
   describe('helpers', () => {
     it('should render date helpers', async () => {
       mockTime('2025-01-01T12:00:00.000Z');
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
         The date today is: {{date}}
         The date today is: {{dateLong}}
@@ -125,9 +136,9 @@ describe('TemplateRenderer', () => {
 
     it('should render time helpers', async () => {
       mockTime('2025-01-01T12:00:00.000Z');
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
         The time now is: {{time}}
         The time now is: {{timeZone}}
@@ -152,9 +163,9 @@ describe('TemplateRenderer', () => {
 
     it('should render datetime helpers', async () => {
       mockTime('2025-01-01T12:00:00.000Z');
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
         Right now it is: {{dateTime}}
         Right now it is: {{dateTimeZone}}
@@ -179,9 +190,9 @@ describe('TemplateRenderer', () => {
 
     it('should be able to pass time zone style', async () => {
       mockTime('2025-01-01T12:00:00.000Z');
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
         The time now is: {{timeZone}}
         The time now is: {{timeZone style="long"}}
@@ -204,9 +215,9 @@ describe('TemplateRenderer', () => {
 
     it('should be able to pass datetime zone style', async () => {
       mockTime('2025-01-01T12:00:00.000Z');
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
         Right now it is: {{dateTimeZone}}
         Right now it is: {{dateTimeZone style="long"}}
@@ -228,9 +239,9 @@ describe('TemplateRenderer', () => {
     });
 
     it('should render date helpers with argument passed', async () => {
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
         The date today is: {{date today}}
         The date today is: {{dateLong today}}
@@ -253,9 +264,9 @@ describe('TemplateRenderer', () => {
     });
 
     it('should render time helpers with arg', async () => {
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
         The time now is: {{time now}}
         The time now is: {{timeZone now}}
@@ -281,9 +292,9 @@ describe('TemplateRenderer', () => {
     });
 
     it('should render time helpers with arg', async () => {
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
         The time now is: {{time now meridiem="caps"}}
         The time now is: {{time now meridiem="space"}}
@@ -307,9 +318,9 @@ describe('TemplateRenderer', () => {
     });
 
     it('should have a number helper in loops', async () => {
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
 {{#each people}}
 {{number}}. {{name}}
@@ -330,9 +341,9 @@ describe('TemplateRenderer', () => {
 
     it('should render relative time helpers', async () => {
       mockTime('2025-07-01T12:00:00.000Z');
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
         This happened: {{relTime date}}
         This happened: {{relTime date min=cutoff}}
@@ -354,9 +365,9 @@ describe('TemplateRenderer', () => {
     });
 
     it('should render link helper', async () => {
-      const interpolator = new TemplateRenderer();
+      const renderer = new TemplateRenderer();
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
         {{link "http://example.com" "Hello"}}
         {{link url="http://example.com" text="Hello"}}
@@ -374,7 +385,7 @@ describe('TemplateRenderer', () => {
     });
 
     it('should be able to create custom helpers', async () => {
-      const interpolator = new TemplateRenderer({
+      const renderer = new TemplateRenderer({
         helpers: {
           foo(bar = 'bar', baz = 'baz') {
             return `${bar} ${baz}`;
@@ -382,7 +393,7 @@ describe('TemplateRenderer', () => {
         },
       });
 
-      const { body } = interpolator.run({
+      const { body } = renderer.run({
         template: `
         Hello: {{foo}}
         Hello: {{foo "one"}}
@@ -410,7 +421,7 @@ describe('TemplateRenderer', () => {
   });
 
   it('should allow prototype getters', async () => {
-    const interpolator = new TemplateRenderer();
+    const renderer = new TemplateRenderer();
 
     class User {
       constructor(name) {
@@ -424,7 +435,7 @@ describe('TemplateRenderer', () => {
 
     const user = new User('Frank');
 
-    const { body } = interpolator.run({
+    const { body } = renderer.run({
       template: `
       Hello {{user.name}}
         `.trim(),
@@ -437,9 +448,9 @@ describe('TemplateRenderer', () => {
   });
 
   it('should allow unescape of HTML entities', async () => {
-    const interpolator = new TemplateRenderer();
+    const renderer = new TemplateRenderer();
 
-    const { body } = interpolator.run({
+    const { body } = renderer.run({
       template: `
       {{{url}}}
         `.trim(),

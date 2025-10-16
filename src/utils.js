@@ -39,12 +39,13 @@ function readSource(filepath) {
 
 // Sections
 
-const SECTIONS_REG = /^=== (\w+) ===\n\n(.+)/gm;
+const SECTIONS_REG = /^=== (\w+) ===\n\n/gm;
 
 export function getSections(str) {
-  const matches = Array.from(str.matchAll(SECTIONS_REG));
+  str = str.trim();
+  const arr = str.split(SECTIONS_REG).slice(1);
 
-  if (!matches.length) {
+  if (!arr.length) {
     return [
       {
         content: str,
@@ -52,10 +53,14 @@ export function getSections(str) {
     ];
   }
 
-  return matches.map((match) => {
-    return {
-      title: match[1],
-      content: match[2],
-    };
-  });
+  const sections = [];
+
+  for (let i = 0; i < arr.length; i += 2) {
+    sections.push({
+      title: arr[i],
+      content: arr[i + 1].trim(),
+    });
+  }
+
+  return sections;
 }
