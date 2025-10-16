@@ -1,0 +1,8 @@
+#!/bin/bash
+
+rm -rf dist
+mkdir -p dist/cjs
+echo "{ \"type\": \"commonjs\" }" > dist/cjs/package.json
+yarn build:cjs
+yarn build:esm
+yarn build:types

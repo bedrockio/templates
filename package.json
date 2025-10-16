@@ -1,0 +1,62 @@
+{
+  "name": "@bedrockio/templates",
+  "version": "0.1.0",
+  "description": "Bedrock utility for custom tempaltes.",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "lint": "eslint",
+    "build": "scripts/build",
+    "eject": "scripts/eject",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json && tsc-alias -f -p tsconfig.esm.json",
+    "build:types": "tsc -p tsconfig.types.json",
+    "prepublish": "yarn build"
+  },
+  "types": "types/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "contributors": [
+    {
+      "name": "Andrew Plummer",
+      "email": "andrew@rekall.ai"
+    }
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bedrockio/templates"
+  },
+  "dependencies": {
+    "@bedrockio/chrono": "^0.7.0",
+    "front-matter": "^4.0.2",
+    "handlebars": "^4.7.8",
+    "lodash-es": "^4.17.21"
+  },
+  "devDependencies": {
+    "@bedrockio/eslint-plugin": "^1.3.0",
+    "@bedrockio/prettier-config": "^1.1.1",
+    "@sinonjs/fake-timers": "^15.0.0",
+    "eslint": "^9.37.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "prettier": "@bedrockio/prettier-config",
+  "files": [
+    "dist/**",
+    "types/**",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "volta": {
+    "node": "22.20.0",
+    "yarn": "1.22.22"
+  }
+}

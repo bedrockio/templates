@@ -1,0 +1,11 @@
+.vscode
+.eslintrc
+.eslintignore
+tsconfig.json
+scripts
+test
+.env.live
+*.env
+*.pem
+*.key
+*.crt
