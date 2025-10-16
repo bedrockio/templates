@@ -1,7 +1,7 @@
 {
   "name": "@bedrockio/templates",
   "version": "0.1.0",
-  "description": "Bedrock utility for custom tempaltes.",
+  "description": "Bedrock utility for custom templates.",
   "type": "module",
   "scripts": {
     "test": "vitest run",
