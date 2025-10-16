@@ -1,5 +1,5 @@
 import Handlebars from 'handlebars';
-import { memoize } from 'lodash-es';
+import memoize from 'lodash.memoize';
 
 import { DEFAULT_HELPERS, resolveHelpers } from './helpers';
 import { getSections, resolveTemplateSource, runFrontMatter } from './utils';
