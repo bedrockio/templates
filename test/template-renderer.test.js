@@ -390,6 +390,33 @@ I am the user! My job is to:
       );
     });
 
+    it('should normalize URLs in link helper', async () => {
+      const renderer = new TemplateRenderer({
+        baseUrl: 'http://example.com',
+      });
+
+      const { body } = renderer.run({
+        template: `
+        {{link "/dashboard" "Hello"}}
+        {{link "/users/:id" "Hello" id=user.id}}
+        {{link "/users?id=:id" "Hello" id=user.id}}
+        `.trim(),
+        params: {
+          user: {
+            id: '123',
+          },
+        },
+      });
+
+      expect(body).toBe(
+        `
+        [Hello](http://example.com/dashboard)
+        [Hello](http://example.com/users/123)
+        [Hello](http://example.com/users?id=123)
+        `.trim()
+      );
+    });
+
     it('should render list helper', async () => {
       const renderer = new TemplateRenderer();
       const { body } = renderer.run({

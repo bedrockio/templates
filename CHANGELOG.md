@@ -1,3 +1,7 @@
+## Next
+
+- Allow params in URLs.
+
 ## 0.1.1
 
 - `lodash-es` -> `lodash.memoize`

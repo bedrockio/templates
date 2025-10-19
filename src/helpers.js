@@ -176,7 +176,9 @@ function resolveHelperArgs(args, names, options) {
   });
 
   const resolved = names.map((name) => {
-    return params[name];
+    let value = params[name];
+    value = normalizeParam(name, value, params, options);
+    return value;
   });
 
   options = {
@@ -185,6 +187,34 @@ function resolveHelperArgs(args, names, options) {
   };
 
   return [...resolved, options];
+}
+
+// Param normalization
+
+function normalizeParam(name, value, params, options) {
+  if (name === 'url' || name === 'href') {
+    value = normalizeUrl(value, params, options);
+  }
+  return value;
+}
+
+const PARAM_REG = /:([a-z]+)/gi;
+
+function normalizeUrl(str, params, options) {
+  const { baseUrl } = options;
+  if (baseUrl && str.startsWith('/')) {
+    str = baseUrl + str;
+  }
+
+  str = str.replace(PARAM_REG, (_, key) => {
+    const value = params[key];
+    // Need to delete the injected params or they
+    // will be passed on to the HTML element.
+    delete params[key];
+    return value;
+  });
+
+  return str;
 }
 
 function generateHtml(tag, props) {
