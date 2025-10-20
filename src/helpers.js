@@ -97,16 +97,15 @@ export const DEFAULT_HELPERS = {
     return index + 1;
   },
 
-  link(url, text) {
+  link(text, url) {
     return new Handlebars.SafeString(`[${text}](${url})`);
   },
 
-  button(url, text) {
+  button(text, url) {
     return generateHtml('a', {
       text,
       href: url,
       class: 'button',
-      target: '_blank',
     });
   },
 
@@ -130,7 +129,8 @@ export function resolveHelpers(helpers, options) {
 function resolveHelper(arg, options) {
   const { names, handler } = resolveArgumentNames(arg);
   return (...args) => {
-    return handler(...resolveHelperArgs(args, names, options));
+    const result = handler(...resolveHelperArgs(args, names, options));
+    return generateHtml(result);
   };
 }
 
@@ -176,6 +176,10 @@ function resolveHelperArgs(args, names, options) {
   });
 
   const resolved = names.map((name) => {
+    if (name === 'params') {
+      return meta.hash;
+    }
+
     let value = params[name];
     value = normalizeParam(name, value, params, options);
     return value;
@@ -217,7 +221,15 @@ function normalizeUrl(str, params, options) {
   return str;
 }
 
-function generateHtml(tag, props) {
+function generateHtml(...args) {
+  const arg = args.length > 1 ? args : args[0];
+
+  if (!Array.isArray(arg)) {
+    return arg || '';
+  }
+
+  const [tag, props] = arg;
+
   const { text, ...rest } = props;
   const attr = Object.entries(rest)
     .map((entry) => {
@@ -229,9 +241,15 @@ function generateHtml(tag, props) {
     .filter((a) => a)
     .join(' ');
 
-  let html = `<${tag} ${attr}>`;
+  let html = `<${tag} ${attr}`;
+
   if (text) {
-    html += `${text}</${tag}>`;
+    html += '>';
+    html += generateHtml(text);
+    html += `</${tag}>`;
+  } else {
+    html += ` />`;
   }
+
   return new Handlebars.SafeString(html);
 }

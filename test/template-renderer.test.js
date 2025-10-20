@@ -76,6 +76,73 @@ I am the user! My job is to:
         },
       ]);
     });
+
+    it('should be able to pass extension', async () => {
+      const renderer = new TemplateRenderer({
+        dir: 'test/templates',
+      });
+
+      const result = renderer.run({
+        template: 'basic.md',
+        params: {
+          name: 'Frank',
+        },
+      });
+      expect(result.body).toBe('Hello there Frank!');
+    });
+
+    it('should work for html files', async () => {
+      const renderer = new TemplateRenderer({
+        dir: 'test/templates',
+      });
+
+      const result = renderer.run({
+        template: 'layout.html',
+        params: {
+          title: 'Hello',
+          body: 'Hello!',
+        },
+      });
+      expect(result.body).toBe(
+        `
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello</title>
+  </head>
+  <body>
+    Hello!
+  </body>
+</html>
+        `.trim()
+      );
+    });
+  });
+
+  describe('raw', () => {
+    it('should be able to use a raw template in options', async () => {
+      const renderer = new TemplateRenderer();
+
+      const { body } = renderer.run({
+        template: 'Why hello {{name}}!',
+        params: {
+          name: 'Carl',
+        },
+      });
+      expect(body).toBe('Why hello Carl!');
+    });
+
+    it('should allow body as an alias', async () => {
+      const renderer = new TemplateRenderer();
+
+      const { body } = renderer.run({
+        body: 'Why hello {{name}}!',
+        params: {
+          name: 'Carl',
+        },
+      });
+      expect(body).toBe('Why hello Carl!');
+    });
   });
 
   describe('setup', () => {
@@ -93,18 +160,6 @@ I am the user! My job is to:
         },
       });
       expect(body).toBe('Hello Frank Reynolds!');
-    });
-
-    it('should be able to use a raw template in options', async () => {
-      const renderer = new TemplateRenderer();
-
-      const { body } = renderer.run({
-        template: 'Why hello {{name}}!',
-        params: {
-          name: 'Carl',
-        },
-      });
-      expect(body).toBe('Why hello Carl!');
     });
 
     it('should not error if no template passed', async () => {
@@ -375,7 +430,7 @@ I am the user! My job is to:
 
       const { body } = renderer.run({
         template: `
-        {{link "http://example.com" "Hello"}}
+        {{link "Hello" "http://example.com"}}
         {{link url="http://example.com" text="Hello"}}
         {{link url="http://example.com?foo=bar" text="Hello"}}
         `.trim(),
@@ -397,9 +452,9 @@ I am the user! My job is to:
 
       const { body } = renderer.run({
         template: `
-        {{link "/dashboard" "Hello"}}
-        {{link "/users/:id" "Hello" id=user.id}}
-        {{link "/users?id=:id" "Hello" id=user.id}}
+        {{link "Hello" "/dashboard"}}
+        {{link "Hello" "/users/:id" id=user.id}}
+        {{link "Hello" "/users?id=:id" id=user.id}}
         `.trim(),
         params: {
           user: {
@@ -413,6 +468,26 @@ I am the user! My job is to:
         [Hello](http://example.com/dashboard)
         [Hello](http://example.com/users/123)
         [Hello](http://example.com/users?id=123)
+        `.trim()
+      );
+    });
+
+    it('should render button helper', async () => {
+      const renderer = new TemplateRenderer();
+
+      const { body } = renderer.run({
+        template: `
+        {{button "Hello" "http://example.com"}}
+        {{button url="http://example.com" text="Hello"}}
+        {{button url="http://example.com?foo=bar" text="Hello"}}
+        `.trim(),
+      });
+
+      expect(body).toBe(
+        `
+        <a href="http://example.com" class="button">Hello</a>
+        <a href="http://example.com" class="button">Hello</a>
+        <a href="http://example.com?foo=bar" class="button">Hello</a>
         `.trim()
       );
     });
@@ -463,6 +538,57 @@ I am the user! My job is to:
 
       unmockTime();
     });
+
+    it('should transform tuple as html in custom helper', async () => {
+      const renderer = new TemplateRenderer({
+        helpers: {
+          foo() {
+            return ['p', { title: 'Title', text: 'Text' }];
+          },
+        },
+      });
+
+      const { body } = renderer.run({
+        template: '{{foo}}',
+      });
+
+      expect(body).toBe('<p title="Title">Text</p>'.trim());
+    });
+
+    it('should transform nested tuple as html in custom helper', async () => {
+      const renderer = new TemplateRenderer({
+        helpers: {
+          foo() {
+            const img = ['img', { src: 'https://example.com' }];
+            return ['p', { title: 'Title', text: img }];
+          },
+        },
+      });
+
+      const { body } = renderer.run({
+        template: '{{foo}}',
+      });
+
+      expect(body).toBe(
+        '<p title="Title"><img src="https://example.com" /></p>'.trim()
+      );
+    });
+
+    it('should accept arbitrary params in custom helper', async () => {
+      const renderer = new TemplateRenderer({
+        helpers: {
+          multi(tag, params) {
+            return `Tag: ${tag}, Params: ${JSON.stringify(params)}`;
+          },
+        },
+      });
+
+      const { body } = renderer.run({
+        template: '{{multi "a" foo="bar" boo="baz"}}',
+      });
+
+      expect(body).toBe('Tag: a, Params: {"boo":"baz","foo":"bar"}');
+    });
   });
 
   it('should allow prototype getters', async () => {
@@ -496,14 +622,25 @@ I am the user! My job is to:
     const renderer = new TemplateRenderer();
 
     const { body } = renderer.run({
-      template: `
-      {{{url}}}
-        `.trim(),
+      template: '{{{url}}}',
       params: {
         url: 'https://example.com?foo=bar',
       },
     });
 
     expect(body).toBe('https://example.com?foo=bar');
+  });
+
+  it('should not escape basic HTML', async () => {
+    const renderer = new TemplateRenderer();
+
+    const { body } = renderer.run({
+      template: '{{text}}',
+      params: {
+        text: `"Hello" = 'goodbye'`,
+      },
+    });
+
+    expect(body).toBe(`"Hello" = 'goodbye'`);
   });
 });

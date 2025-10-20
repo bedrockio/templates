@@ -23,9 +23,9 @@ export function runFrontMatter(str) {
   };
 }
 
-function tryReadFile(filepath, ext) {
+function tryReadFile(filepath) {
   try {
-    return readFileSync(filepath + ext, 'utf-8');
+    return readFileSync(filepath, 'utf-8');
   } catch (error) {
     if (error.code !== 'ENOENT') {
       throw error;
@@ -34,7 +34,11 @@ function tryReadFile(filepath, ext) {
 }
 
 function readSource(filepath) {
-  return tryReadFile(filepath, '.md') || tryReadFile(filepath, '.txt');
+  if (path.extname(filepath)) {
+    return tryReadFile(filepath);
+  } else {
+    return tryReadFile(filepath + '.md') || tryReadFile(filepath + '.txt');
+  }
 }
 
 // Sections
@@ -63,4 +67,16 @@ export function getSections(str) {
   }
 
   return sections;
+}
+
+// Whitespace
+
+// Handlebars doesn't allow a way to selectively
+// escape so instead unescape some basic tokens.
+export function unescapeHtml(html) {
+  html = html.replace(/&#39;/g, "'");
+  html = html.replace(/&quot;/g, '"');
+  html = html.replace(/&#x27;/g, "'");
+  html = html.replace(/&#x3D;/g, '=');
+  return html;
 }

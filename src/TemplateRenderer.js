@@ -2,7 +2,13 @@ import Handlebars from 'handlebars';
 import memoize from 'lodash.memoize';
 
 import { DEFAULT_HELPERS, resolveHelpers } from './helpers';
-import { getSections, resolveTemplateSource, runFrontMatter } from './utils';
+
+import {
+  getSections,
+  resolveTemplateSource,
+  runFrontMatter,
+  unescapeHtml,
+} from './utils';
 
 export default class TemplateRenderer {
   constructor(options = {}) {
@@ -19,13 +25,6 @@ export default class TemplateRenderer {
   run(options) {
     const { template, params, helpers, ...rest } = this.resolveOptions(options);
 
-    if (!template) {
-      return {
-        body: '',
-        sections: [],
-      };
-    }
-
     const compiled = this.loadTemplate(template, rest);
 
     return compiled(params, {
@@ -38,7 +37,7 @@ export default class TemplateRenderer {
 
   /** @returns {Object} */
   resolveOptions(options = {}) {
-    return {
+    const resolved = {
       ...this.options,
       ...options,
       params: {
@@ -46,13 +45,17 @@ export default class TemplateRenderer {
         ...options.params,
       },
     };
+    resolved.template ||= resolved.body;
+    return resolved;
   }
 
-  loadTemplate = memoize((input, options) => {
+  loadTemplate = memoize((input = '', options) => {
     const source = resolveTemplateSource(input, options);
     const template = Handlebars.compile(source.trim());
     return (params, options) => {
-      const output = template(params, options);
+      let output = template(params, options);
+
+      output = unescapeHtml(output);
 
       const { body, meta } = runFrontMatter(output);
 
