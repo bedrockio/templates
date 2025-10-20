@@ -16,10 +16,10 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.27.1.tgz#a7054dcc145a967dd4dc8fee845a57c1316c9df8"
   integrity sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow==
 
-"@bedrockio/chrono@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@bedrockio/chrono/-/chrono-0.7.0.tgz#9241d08ec79d985af7b244201903d0637e191f27"
-  integrity sha512-Bjz82ReG04G38029zeX4ZTzLkgHehGGo1mBx+gz7Xv9ZWkM9NnsS8UrzUjRuAP36P4EepR3MXLI6zmqhAtlzlA==
+"@bedrockio/chrono@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@bedrockio/chrono/-/chrono-0.8.0.tgz#2e92764d980a523cf0ffd61614366870ab0aa905"
+  integrity sha512-l04dZoSIgH+28GWmVyuFqh3bOz4Qo0iXFtZ49lyKaMLMfA7JGQNPwRM3p+9Ko+BlDZJsIBOyQfLoXd6Pcw5T9A==
 
 "@bedrockio/eslint-plugin@^1.3.0":
   version "1.3.0"
