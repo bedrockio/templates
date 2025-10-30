@@ -1,3 +1,7 @@
+## 0.3.1
+
+- Fixed issue with long filenames.
+
 ## 0.3.0
 
 - Allow getting template source.

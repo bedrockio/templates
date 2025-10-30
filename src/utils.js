@@ -7,7 +7,7 @@ export function resolveTemplateSource(arg, options) {
   const { dir } = options;
 
   let source;
-  if (dir) {
+  if (dir && isValidFilename(arg)) {
     const filepath = path.resolve(dir, arg);
     source = readSource(filepath) || arg;
   } else {
@@ -42,6 +42,10 @@ function readSource(filepath) {
   } else {
     return tryReadFile(filepath + '.md') || tryReadFile(filepath + '.txt');
   }
+}
+
+function isValidFilename(str) {
+  return str.length <= 255 && !str.includes('\n');
 }
 
 // Sections

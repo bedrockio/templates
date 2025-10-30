@@ -152,6 +152,19 @@ I am the user! My job is to:
       });
       expect(body).toBe('Why hello Carl!');
     });
+
+    it('should not choke on long filenames', async () => {
+      const renderer = new TemplateRenderer();
+
+      const template = 'f'.repeat(256);
+
+      const { body } = renderer.run({
+        dir: 'test/templates',
+        template,
+      });
+
+      expect(body).toBe(template);
+    });
   });
 
   describe('setup', () => {
