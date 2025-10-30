@@ -33,6 +33,13 @@ export default class TemplateRenderer {
     });
   }
 
+  getTemplateSource = memoize((input = '', options) => {
+    return resolveTemplateSource(input, {
+      ...this.options,
+      ...options,
+    });
+  });
+
   // Private
 
   /** @returns {Object} */
@@ -50,8 +57,8 @@ export default class TemplateRenderer {
   }
 
   loadTemplate = memoize((input = '', options) => {
-    const source = resolveTemplateSource(input, options);
-    const template = Handlebars.compile(source.trim());
+    const source = this.getTemplateSource(input, options);
+    const template = Handlebars.compile(source);
     return (params, options) => {
       let output = template(params, options);
 

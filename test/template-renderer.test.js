@@ -117,6 +117,15 @@ I am the user! My job is to:
         `.trim()
       );
     });
+
+    it('should get template source', async () => {
+      const renderer = new TemplateRenderer({
+        dir: 'test/templates',
+      });
+
+      const source = renderer.getTemplateSource('basic');
+      expect(source).toBe('Hello there {{name}}!');
+    });
   });
 
   describe('raw', () => {
@@ -402,15 +411,18 @@ I am the user! My job is to:
 
     it('should render relative time helpers', async () => {
       mockTime('2025-07-01T12:00:00.000Z');
+
       const renderer = new TemplateRenderer();
 
       const { body } = renderer.run({
         template: `
         This happened: {{relTime date}}
         This happened: {{relTime date min=cutoff}}
+        This happened: {{relTime last min=cutoff}}
         `.trim(),
         params: {
           date: new Date('2025-01-01T12:00:00.000Z'),
+          last: new Date('2024-01-01T12:00:00.000Z'),
           cutoff: new Date('2025-03-01T12:00:00.000Z'),
         },
       });
@@ -418,7 +430,8 @@ I am the user! My job is to:
       expect(body).toBe(
         `
         This happened: 6 months ago
-        This happened: January 1, 2025
+        This happened: January 1
+        This happened: January 1, 2024
         `.trim()
       );
 

@@ -1,3 +1,8 @@
+## 0.3.0
+
+- Allow getting template source.
+- Fixed relTime tests.
+
 ## 0.2.0
 
 - Allow params in URLs.

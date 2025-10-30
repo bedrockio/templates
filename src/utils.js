@@ -6,12 +6,15 @@ import frontmatter from 'front-matter';
 export function resolveTemplateSource(arg, options) {
   const { dir } = options;
 
+  let source;
   if (dir) {
     const filepath = path.resolve(dir, arg);
-    return readSource(filepath) || arg;
+    source = readSource(filepath) || arg;
   } else {
-    return arg;
+    source = arg;
   }
+
+  return source.trim();
 }
 
 export function runFrontMatter(str) {
