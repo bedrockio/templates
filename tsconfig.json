@@ -4,11 +4,11 @@
   ],
   "exclude": [
     "dist",
-    "node_modules",
+    "node_modules"
   ],
   "compilerOptions": {
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": false,
     "rootDir": "src",
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -16,6 +16,6 @@
     "target": "ES2022",
     "lib": [
       "ES2022"
-    ],
+    ]
   }
 }
