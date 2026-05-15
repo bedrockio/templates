@@ -136,11 +136,12 @@ function resolveHelper(arg, options) {
 
 // Arguments
 
-const ARGUMENT_NAMES_REG = /\w+\((.+)\) {/;
+const ARGUMENT_NAMES_REG = /\w+\s?\((.+)\) {/;
 
 function resolveArgumentNames(arg) {
   if (typeof arg === 'function') {
     const handler = arg;
+
     const match = handler.toString().match(ARGUMENT_NAMES_REG);
 
     let names = [];

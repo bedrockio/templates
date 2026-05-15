@@ -1,3 +1,7 @@
+## 0.3.2
+
+- Fixed oddness with SWC's handling of Function#toString.
+
 ## 0.3.1
 
 - Fixed issue with long filenames.
